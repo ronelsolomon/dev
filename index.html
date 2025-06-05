@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Postmark Inbox Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; }
+        h1 { color: #1d72b8; }
+        .email { border-bottom: 1px solid #eee; margin-bottom: 1em; padding-bottom: 1em; }
+        .subject { font-weight: bold; }
+        .from { color: #888; }
+        .body { margin-top: 0.5em; }
+    </style>
+</head>
+<body>
+    <h1>📥 Postmark Inbox Dashboard</h1>
+    <div id="inbox"></div>
+    <script>
+        async function loadInbox() {
+            const res = await fetch('/api/inbox');
+            const emails = await res.json();
+            const inboxDiv = document.getElementById('inbox');
+            inboxDiv.innerHTML = emails.map(email => `
+                <div class="email">
+                    <div class="subject">${email.subject}</div>
+                    <div class="from">From: ${email.from} | ${new Date(email.receivedAt).toLocaleString()}</div>
+                    <div class="body">${email.body.replace(/\n/g, '<br>')}</div>
+                </div>
+            `).join('');
+        }
+        loadInbox();
+        setInterval(loadInbox, 5000);
+    </script>
+</body>
+</html>
